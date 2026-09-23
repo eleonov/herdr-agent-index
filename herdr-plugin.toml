@@ -1,0 +1,77 @@
+id = "herdr-agent-index"
+name = "Agent index"
+description = "Number the sidebar agent rows so focus_agent has visible targets."
+version = "0.2.0"
+# agent.view.set was only checked against 0.9.1.
+min_herdr_version = "0.9.1"
+platforms = ["macos"]
+
+# Pane metadata is dropped when the server restarts, so renumber once the
+# session is back.
+[[startup]]
+command = ["python3", "sync.py"]
+
+# Every event that can change the panel order has to renumber. Under
+# agent_panel_sort = "priority" the status change is the one that fires most.
+[[events]]
+on = "pane.agent_status_changed"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "pane.agent_detected"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "pane.closed"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "pane.exited"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "pane.moved"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "tab.moved"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "tab.closed"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "workspace.moved"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "workspace.reordered"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "workspace.closed"
+command = ["python3", "sync.py"]
+
+# Looking at a done agent turns it idle with no status event, and the focus
+# events are the closest signal. Returning to the terminal window has none;
+# the agent view in sync.py keeps rows and numbers together until the next
+# event re-sorts them.
+[[events]]
+on = "tab.focused"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "pane.focused"
+command = ["python3", "sync.py"]
+
+[[events]]
+on = "workspace.focused"
+command = ["python3", "sync.py"]
+
+# Escape hatch when the numbers and the panel disagree.
+[[actions]]
+id = "refresh"
+title = "Refresh agent numbers"
+contexts = ["global"]
+command = ["python3", "sync.py"]
